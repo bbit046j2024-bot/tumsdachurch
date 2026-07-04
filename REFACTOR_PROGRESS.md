@@ -1,6 +1,6 @@
 # TUMSDA Church Website Refactor — Progress & Handoff
 
-**Status:** ✅ Phase 1 Complete | 🔄 Phase 2–4 Ready for Implementation
+**Status:** ✅ Phase 1 Complete | 🔄 Phase 2–4 In Progress
 
 ---
 
@@ -18,7 +18,7 @@
 - ✅ `evangelism.php` — mission accordion and details
 - ✅ `sermons.php` — featured & playlist sermon embeds
 - ✅ `ministries.php` — ministry descriptions
-- ✅ `leadership.php` — leadership cards + contact form (Formspree placeholder)
+- ✅ `leadership.php` — leadership cards + contact form (currently integrated with Web3Forms)
 
 **All 7 pages now:**
 - Use `<?php $currentPage = basename($_SERVER['PHP_SELF']); include 'header.php'; ?>`
@@ -31,156 +31,84 @@
 
 ---
 
-## 🔄 Remaining Work
+## 🔄 Work In Progress (updated)
 
-### 2. **Image Optimization** (NOT STARTED)
+### 2. **Image Optimization** (IN PROGRESS)
 
-**Current Status:** Images are large:
-- `ChurchChoir.png` ~7.5MB
-- `ALO.png` ~5.9MB
-- `Sabbath.png` ~3.7MB
-- Others: 1–3MB each
+**Current Status:** Guide created and added to the repository as `IMAGE_OPTIMIZATION_GUIDE.md` (see repository root).
 
-**Plan:**
-1. Create `assets/img/original/` directory
-2. Move oversized images there
-3. Use ImageMagick or online converter (TinyPNG, Squoosh) to generate:
-   - `.webp` (modern browsers, best compression)
-   - `.jpg` or `.png` fallback (older browsers, email preview crawlers)
-4. Update HTML with `<picture>` elements:
-   ```html
-   <picture>
-     <source type="image/webp" srcset="assets/img/Sabbath.webp">
-     <img src="assets/img/Sabbath.jpg" alt="Worship" class="d-block w-100">
-   </picture>
-   ```
-5. Update all image references in:
-   - `index.php` (carousel: 4 images)
-   - `about.php` (hero: 1 image)
-   - `departments.php` (department images)
-   - `footer.php` (logos, icon, popup till image)
+**What I added:**
+- `IMAGE_OPTIMIZATION_GUIDE.md` — step-by-step instructions, scripts and example commands for batching image compression, generating modern fallbacks (.webp + .jpg), moving originals to `assets/img/original/`, and a suggested `<picture>` markup pattern to use in templates.
 
-**Expected Impact:** Page load ~30–50% faster, mobile bandwidth reduced
+**Next steps (implementation):**
+1. Run the provided batch script on a development machine (or CI runner) to generate optimized images in `assets/img/` and copy originals into `assets/img/original/`.
+2. Replace inline `<img src="assets/img/*.png">` references with `<picture>` blocks where critical hero/carousel images are used (see examples in the guide).
+3. Manually verify responsive sizes and visual quality on mobile and desktop.
+4. Commit the optimized image files and a short PR describing size savings per-file (attach before/after sizes).
+
+**Expected Impact:** Page load ~30–50% faster, mobile bandwidth reduced.
 
 ---
 
-### 3. **Consistent Styling Across Pages** (NOT STARTED)
+### 3. **Consistent Styling Across Pages** (TODO)
 
 **Current State:**
-- Homepage (`index.php`) has polished hero section, styled sections, cards, accordions
-- Other pages exist but styling consistency not verified
+- Pages share a single stylesheet (`assets/style.css`) but a light audit should be performed to ensure consistent component styles (cards, buttons, inputs, accordions).
 
-**Checklist:**
-1. ✅ Navigate to each page locally: `php -S localhost:8000`
-   - ✅ `index.php` (home)
-   - ✅ `about.php`
-   - ✅ `departments.php`
-   - ✅ `evangelism.php`
-   - ✅ `sermons.php`
-   - ✅ `ministries.php`
-   - ✅ `leadership.php`
-
-2. Visual comparison:
-   - Card styling consistent across all pages?
-   - Accordion styles match?
-   - Form inputs (in leadership.php contact) match homepage style?
-   - Tables (in about.php) are readable and consistent?
-
-3. Responsive check:
-   - Mobile viewport (375px, 768px, 1024px)
-   - Side-panel menu opens/closes?
-   - Navbar collapses properly?
-
-4. Fix any inconsistencies in `assets/style.css`
+**Checklist & small tasks:**
+- [ ] Run a visual pass: open each page under `php -S localhost:8000` and check the components listed in the checklist.
+- [ ] Add small helper utilities into `assets/style.css` (spacing and typography tokens) to reduce duplication.
+- [ ] Standardize form inputs (focus/hover styles) used in `leadership.php` with classes from `style.css`.
+- [ ] Create a `style-audit.md` note (optional) listing any inconsistencies found and the required CSS changes.
 
 ---
 
-### 4. **Real Formspree Integration** (QUICK FIX)
+### 4. **Real Formspree / Forms Integration** (QUICK FIX — ACTION RECOMMENDED)
 
-**Current:** `leadership.php` line 84 has placeholder:
-```php
-<form method="post" action="https://formspree.io/f/{YOUR_FORM_ID}" ...>
-  <!-- Replace {YOUR_FORM_ID} with your actual Formspree form ID -->
+**Current:** `leadership.php` currently posts to Web3Forms using an access_key (live):
+```html
+<form method="post" action="https://api.web3forms.com/submit">
+  <input type="hidden" name="access_key" value="f0ddf1cb-9e8c-494f-a7a1-262385c5a479">
 ```
 
-**Steps:**
-1. Go to https://formspree.io
-2. Sign up / log in
-3. Create a new form, name it "TUMSDA Contact"
-4. Copy the form ID (format: `abc123def456`)
-5. Replace `{YOUR_FORM_ID}` with the real ID in `leadership.php`
-6. Test: fill form, submit, confirm email arrives
+**Options & recommended steps:**
+- If you prefer Formspree:
+  1. Create a Formspree form at https://formspree.io and copy the form ID.
+  2. Replace the `action` value with `https://formspree.io/f/<FORM_ID>` and remove the Web3Forms `access_key` input.
+  3. Test the form submission and confirm delivery to the configured email or webhook.
+- If Web3Forms is acceptable (already live):
+  - Keep as-is, but rotate the access key if it was committed accidentally in a public repo (recommended best practice).
 
-**Alternative:** Use Web3Forms (https://web3forms.com) instead if Formspree blocks you.
+**Action item:** Decide which provider to use and update `leadership.php` accordingly. If you want, I can: create a PR that replaces the form action with a Formspree placeholder or (if you provide a Formspree ID) commit it directly.
 
 ---
 
 ### 5. **Functional Testing** (CRITICAL BEFORE DEPLOYMENT)
 
-**Browser Test Suite (localhost:8000):**
+**Checklist (expanded):**
+- [ ] Navigation: verify active link highlights for each page.
+- [ ] Hero Carousel: automatic rotation, manual prev/next, touch swipe on mobile.
+- [ ] Popups: support/mission/gallery/contact open & close, accessible via keyboard where applicable.
+- [ ] Mobile Menu: hamburger opens side-panel <1024px.
+- [ ] Forms: contact form (leadership.php) submits, receives confirmation;
+- [ ] External Links: YouTube, WhatsApp, Adventist.org open in new tab.
+- [ ] Image Loads: Verify optimized images fallback to JPG/PNG if not supported.
+- [ ] Console Errors: fix any JS/CSS console errors.
+- [ ] Lighthouse: run Lighthouse and aim for performance/accessibility >80.
 
-| Feature | Pages | Expected |
-|---------|-------|----------|
-| **Navigation** | All | All 6 links work, active link highlights |
-| **Hero Carousel** | index.php | Auto-rotates, manual prev/next, swipe on mobile |
-| **Popups** | footer.php buttons | Support/Mission/Gallery/Contact open & close |
-| **Mobile Menu** | All | Hamburger icon appears <1024px, side-panel opens/closes |
-| **Forms** | leadership.php | Contact form submits to Formspree, no errors |
-| **External Links** | All | YouTube, WhatsApp, Adventist.org links open correctly |
-| **Images Load** | All | All carousel, hero, department, leader photos appear |
-| **CSS Loads** | All | No styling broken, fonts render correctly |
-| **Mobile Layout** | All | Readable at 375px, 768px, 1024px, 1440px |
-
----
-
-## Quick Start Guide
-
-### Local Testing
-```bash
-cd /path/to/tumsdachurch
-php -S localhost:8000
-# Open http://localhost:8000/index.php in browser
-```
-
-### File Structure
-```
-tumsdachurch/
-├── header.php          # Shared top (nav, head, body open)
-├── footer.php          # Shared bottom (footer, popups, body close)
-├── index.php           # Homepage
-├── about.php
-├── departments.php
-├── evangelism.php
-├── sermons.php
-├── ministries.php
-├── leadership.php      # Has contact form
-└── assets/
-    ├── css/
-    │   ├── style.css
-    │   ├── bootstrap.min.css
-    │   └── all.min.css
-    ├── img/
-    │   ├── original/    # (TO CREATE for optimized images)
-    │   ├── favicon.png
-    │   ├── logo.jpg
-    │   ├── [all carousel/hero images]
-    │   └── ...
-    ├── js/
-    │   ├── main.js
-    │   └── bootstrap.bundle.min.js
-    └── ...
-```
+**Suggested automated checks:**
+- Local manual test: `php -S localhost:8000` then browse pages.
+- Optional: Add a GitHub Actions workflow that runs a headless Lighthouse check against a deployed preview or `http-server` in CI.
 
 ---
 
-## Deployment Checklist
+## Deployment Checklist (updated)
 
 Before pushing to production:
-
-- [ ] Images optimized (webp + fallback)
+- [ ] Images optimized (webp + fallback) — GUIDE created
 - [ ] All 7 pages tested locally (no 404, all styles applied)
 - [ ] Carousels/popups/menus work on mobile & desktop
-- [ ] Contact form connected to real Formspree ID, tested submission
+- [ ] Contact form connected to chosen provider and tested
 - [ ] No console errors (F12 → Console tab)
 - [ ] Lighthouse score >80 (if checked)
 - [ ] All external links open correctly
@@ -190,13 +118,13 @@ Before pushing to production:
 
 ## Notes for Next Collaborator
 
-1. **This is a feature-branch-ready refactor** — if starting over, create a branch (`git checkout -b feature/optimization`) before making changes
-2. **Asset paths are relative** — server must be at root of `tumsdachurch/` directory
-3. **No external CDN issues expected** — Bootstrap, Font Awesome, Google Fonts all HTTPS
+1. **This is a feature-branch-ready refactor** — if starting changes, create a branch (`git checkout -b feature/optimization`) before making changes.
+2. **Asset paths are relative** — server must be at root of `tumsdachurch/` directory.
+3. **No external CDN issues expected** — Bootstrap, Font Awesome, Google Fonts all HTTPS.
 4. **PHP version:** Assumes PHP 7.2+ (for `$_SERVER` globals, `include` statements)
-5. **No database** — all content is static HTML/PHP, no `.env` or config files needed
-6. **Existing data intact** — all page content, calendar events, leadership bios preserved
+5. **No database** — all content is static HTML/PHP, no `.env` or config files needed.
+6. **Existing data intact** — all page content, calendar events, leadership bios preserved.
 
 ---
 
-**Last Updated:** 2026-07-04 (after index.html removal & path cleanup)
+**Last Updated:** 2026-07-04 (IMAGE_OPTIMIZATION_GUIDE.md added; image optimization work started)
