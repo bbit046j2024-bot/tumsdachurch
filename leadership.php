@@ -81,8 +81,9 @@ include 'header.php';
 		
 		<div class="row g-4">
 			<div class="col-lg-7">
-				<form method="post" action="https://formspree.io/f/{YOUR_FORM_ID}" class="card shadow-sm">
+				<form method="post" action="https://api.web3forms.com/submit" class="card shadow-sm">
 					<!-- Replace {YOUR_FORM_ID} with your actual Formspree form ID before going live -->
+					<input type="hidden" name="access_key" value="f0ddf1cb-9e8c-494f-a7a1-262385c5a479">
 					<div class="card-body">
 						<div class="mb-3">
 							<label class="form-label">Name</label>
