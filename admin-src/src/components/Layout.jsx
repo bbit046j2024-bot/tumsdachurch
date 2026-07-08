@@ -16,6 +16,8 @@ export default function Layout({ children }) {
     { path: '/content/weekly_meetings', label: 'Weekly Meetings', icon: 'fa-clock' },
     { path: '/content/resources', label: 'Resources', icon: 'fa-folder-open' },
     { path: '/content/missions', label: 'Missions', icon: 'fa-globe-africa' },
+    { path: '/content/announcements', label: 'Notice Board', icon: 'fa-bullhorn' },
+    { path: '/content/word_of_the_day', label: 'Word of the Day', icon: 'fa-bible' },
     ...(user?.role === 'admin' ? [{ path: '/members', label: 'Members', icon: 'fa-users' }] : []),
     { path: '/payments', label: 'Payments History', icon: 'fa-wallet' },
   ]

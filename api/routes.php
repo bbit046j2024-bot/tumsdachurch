@@ -56,6 +56,7 @@ function resolveRoute(string $method, array $segments): void {
     $contentTables = [
         'departments', 'ministries', 'leadership',
         'sermons', 'events', 'weekly_meetings', 'resources', 'missions',
+        'announcements', 'word_of_the_day',
     ];
 
     if (in_array($ctrl, $contentTables, true)) {

@@ -11,6 +11,8 @@ const fieldsConfig = {
   weekly_meetings: ['day_of_week', 'time_range', 'program_name', 'sort_order'],
   resources: ['title', 'description', 'icon_path', 'link_url', 'category', 'sort_order'],
   missions: ['title', 'theme_text', 'theme_verse', 'theme_song', 'start_date', 'end_date', 'description', 'is_upcoming', 'sort_order'],
+  announcements: ['title', 'content', 'sort_order'],
+  word_of_the_day: ['content', 'reference'],
 }
 
 export default function ContentPage() {
@@ -98,6 +100,8 @@ export default function ContentPage() {
       case 'events': return ['Title', 'Date', 'Facilitator']
       case 'weekly_meetings': return ['Program Name', 'Day', 'Time']
       case 'missions': return ['Title', 'Theme', 'Dates', 'Upcoming']
+      case 'announcements': return ['Title', 'Content Preview', 'Order']
+      case 'word_of_the_day': return ['Verse Reference', 'Content Preview']
       case 'leadership': return ['Name', 'Position', 'Order']
       case 'departments':
       case 'ministries': return ['Name', 'Scripture', 'Order']
@@ -140,6 +144,21 @@ export default function ContentPage() {
             <td className="px-6 py-4"><span className={`px-3 py-1 rounded-full text-xs font-bold ${item.is_upcoming ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>{item.is_upcoming ? 'Yes' : 'No'}</span></td>
           </>
         )
+      case 'announcements':
+        return (
+          <>
+            <td className="px-6 py-4 font-semibold text-slate-800" style={{ fontFamily: "'Inter', sans-serif" }}>{item.title}</td>
+            <td className="px-6 py-4 text-slate-600 text-sm max-w-xs" style={{ fontFamily: "'Inter', sans-serif" }}>{item.content?.slice(0, 80)}{item.content?.length > 80 ? '…' : ''}</td>
+            <td className="px-6 py-4 text-slate-600" style={{ fontFamily: "'Inter', sans-serif" }}>{item.sort_order}</td>
+          </>
+        )
+      case 'word_of_the_day':
+        return (
+          <>
+            <td className="px-6 py-4 font-semibold text-slate-800" style={{ fontFamily: "'Inter', sans-serif" }}>{item.reference}</td>
+            <td className="px-6 py-4 text-slate-600 text-sm max-w-xs" style={{ fontFamily: "'Inter', sans-serif" }}>{item.content?.slice(0, 80)}{item.content?.length > 80 ? '…' : ''}</td>
+          </>
+        )
       case 'leadership':
         return (
           <>
@@ -170,7 +189,7 @@ export default function ContentPage() {
   const renderInputField = (key) => {
     const label = key.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())
     
-    if (key === 'description' || key === 'statement' || key === 'scripture_quote') {
+    if (key === 'description' || key === 'statement' || key === 'scripture_quote' || key === 'content') {
       return (
         <div key={key} className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-slate-700" style={{ fontFamily: "'Inter', sans-serif" }}>{label}</label>
@@ -264,13 +283,26 @@ export default function ContentPage() {
     )
   }
 
+  const pageTitles = {
+    departments: 'Departments',
+    ministries: 'Ministries',
+    leadership: 'Leadership',
+    sermons: 'Sermons',
+    events: 'Events Calendar',
+    weekly_meetings: 'Weekly Meetings',
+    resources: 'Resources',
+    missions: 'Missions',
+    announcements: 'Church Notice Board',
+    word_of_the_day: 'Word of the Day',
+  }
+  const pageTitle = pageTitles[type] || type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
   const fields = fieldsConfig[type] || []
 
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight" style={{ fontFamily: "'League Spartan', sans-serif" }}>
-          {type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')}
+          {pageTitle}
         </h2>
       </div>
 

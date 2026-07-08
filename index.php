@@ -1,15 +1,27 @@
 <?php
 $currentPage = basename($_SERVER['PHP_SELF']);
 $upcomingMission = null;
+$wordOfTheDay = null;
+$announcements = [];
 try {
     require_once 'db_connect.php';
     $pdo = getPublicDB();
     // Get upcoming mission
     $stmt = $pdo->query("SELECT * FROM missions WHERE is_upcoming = 1 ORDER BY sort_order ASC LIMIT 1");
     $upcomingMission = $stmt->fetch();
+
+    // Get Word of the Day
+    $stmt = $pdo->query("SELECT * FROM word_of_the_day ORDER BY id DESC LIMIT 1");
+    $wordOfTheDay = $stmt->fetch();
+
+    // Get Announcements
+    $stmt = $pdo->query("SELECT * FROM announcements ORDER BY sort_order ASC, id DESC");
+    $announcements = $stmt->fetchAll();
 } catch (Exception $e) {
-    // If database isn't set up yet, just use default content
+    // Fallback if DB tables aren't initialized yet
     $upcomingMission = null;
+    $wordOfTheDay = null;
+    $announcements = [];
 }
 include 'header.php';
 ?>
@@ -123,39 +135,33 @@ include 'header.php';
 
 			<div class="col-lg-6">
 				<!-- Word of the Day -->
-				<div class="mb-4">
+				<?php if ($wordOfTheDay): ?>
+				<div class="mb-4" id="wordOfTheDayBlock">
 					<h3 class="fw-semibold mb-3">Word of the Day</h3>
 					<div class="p-4 bg-dark text-light rounded-3 position-relative">
-						<button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" aria-label="Close"></button>
-						<blockquote class="mb-2 fs-5">"My soul yearns for you in the night; in the morning my spirit longs for you. When your judgments come upon the earth, the people of the world learn righteousn[...]</blockquote>
-						<div class="small opacity-75">Isaiah 26:9</div>
+						<button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" aria-label="Close" onclick="document.getElementById('wordOfTheDayBlock').style.display='none'"></button>
+						<blockquote class="mb-2 fs-5">"<?php echo htmlspecialchars($wordOfTheDay['content']); ?>"</blockquote>
+						<div class="small opacity-75"><?php echo htmlspecialchars($wordOfTheDay['reference']); ?></div>
 					</div>
 				</div>
+				<?php endif; ?>
 				
 				<!-- Church Notice Board & Announcements -->
+				<?php if (!empty($announcements)): ?>
 				<div>
-					<h3 class="fw-semibold mb-3">Church Notice Board & Announcements</h3>
+					<h3 class="fw-semibold mb-3">Church Notice Board &amp; Announcements</h3>
 					<div class="card border-0 shadow-sm">
 						<div class="card-body">
-							<div class="announcement-item mb-3 pb-3 border-bottom">
-								<h6 class="fw-semibold text-primary mb-2">Weekly Meetings Invitation</h6>
-								<p class="mb-0 small text-muted">All members are warmly invited to join our weekly meetings which take place at the church office during the scheduled times as provided in our weekly prog[...]</p>
+							<?php foreach ($announcements as $i => $ann): ?>
+							<div class="announcement-item <?php echo $i < count($announcements) - 1 ? 'mb-3 pb-3 border-bottom' : ''; ?>">
+								<h6 class="fw-semibold text-primary mb-2"><?php echo htmlspecialchars($ann['title']); ?></h6>
+								<p class="mb-0 small text-muted"><?php echo htmlspecialchars($ann['content']); ?></p>
 							</div>
-							<div class="announcement-item mb-3 pb-3 border-bottom">
-								<h6 class="fw-semibold text-primary mb-2">Lunch Hour Prayer</h6>
-								<p class="mb-0 small text-muted">Join us for daily lunch hour prayer at the church office starting at 1:00 PM. This is a special time for corporate prayer, seeking God's guidance, and int[...]</p>
-							</div>
-							<div class="announcement-item mb-3 pb-3 border-bottom">
-								<h6 class="fw-semibold text-primary mb-2">Stewardship of Time</h6>
-								<p class="mb-0 small text-muted">Members are encouraged to be good stewards of time by arriving punctually for services and meetings, respecting others' time, and using our time wisely fo[...]</p>
-							</div>
-							<div class="announcement-item">
-								<h6 class="fw-semibold text-primary mb-2">Brotherhood Among Members</h6>
-								<p class="mb-0 small text-muted">Let brotherly love and unity prevail among all members. We encourage mutual support, encouragement, and care for one another as we grow together in faith [...]</p>
-							</div>
+							<?php endforeach; ?>
 						</div>
 					</div>
 				</div>
+				<?php endif; ?>
 			</div>
 		</div>
 	</div>

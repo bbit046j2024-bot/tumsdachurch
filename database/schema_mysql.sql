@@ -229,3 +229,32 @@ INSERT INTO missions (title, theme_text, theme_verse, theme_song, start_date, en
 ('Balaga Mission 2026', 'Jesus is Coming', 'Revelation 22:12', 'SDAH 442', '2026-12-21', '2027-01-04',
  'As part of our annual tradition, TUMSDA will be heading out for a two-week evangelistic mission in Balaga, bringing the everlasting gospel to new communities and providing spiritual and practical aid where needed.',
  1, 1);
+
+-- ─────────────────────────────────────────────
+-- ANNOUNCEMENTS & WORD OF THE DAY
+-- ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS announcements (
+    id          INT UNSIGNED    NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title       VARCHAR(150)    NOT NULL,
+    content     TEXT            NOT NULL,
+    sort_order  INT             NOT NULL DEFAULT 0,
+    created_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS word_of_the_day (
+    id          INT UNSIGNED    NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    content     TEXT            NOT NULL,
+    reference   VARCHAR(100)    NOT NULL,
+    created_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO announcements (title, content, sort_order) VALUES
+('Weekly Meetings Invitation', 'All members are warmly invited to join our weekly meetings which take place at the church office during the scheduled times as provided in our weekly program.', 1),
+('Lunch Hour Prayer', 'Join us for daily lunch hour prayer at the church office starting at 1:00 PM. This is a special time for corporate prayer, seeking God\'s guidance, and intercession.', 2),
+('Stewardship of Time', 'Members are encouraged to be good stewards of time by arriving punctually for services and meetings, respecting others\' time, and using our time wisely for God\'s glory.', 3),
+('Brotherhood Among Members', 'Let brotherly love and unity prevail among all members. We encourage mutual support, encouragement, and care for one another as we grow together in faith.', 4);
+
+INSERT INTO word_of_the_day (content, reference) VALUES
+('My soul yearns for you in the night; in the morning my spirit longs for you. When your judgments come upon the earth, the people of the world learn righteousness.', 'Isaiah 26:9');

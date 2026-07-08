@@ -16,6 +16,8 @@ class ContentController {
         'weekly_meetings'=> ['day_of_week', 'time_range', 'program_name', 'sort_order'],
         'resources'      => ['title', 'description', 'icon_path', 'link_url', 'category', 'sort_order'],
         'missions'       => ['title', 'theme_text', 'theme_verse', 'theme_song', 'start_date', 'end_date', 'description', 'is_upcoming', 'sort_order'],
+        'announcements'  => ['title', 'content', 'sort_order'],
+        'word_of_the_day'=> ['content', 'reference'],
     ];
 
     // GET /api/{table}
@@ -24,10 +26,11 @@ class ContentController {
         $db = getDB();
 
         $orderCol = match($table) {
-            'events'         => 'event_date',
-            'sermons'        => 'published_at DESC, id',
-            'weekly_meetings'=> 'sort_order, id',
-            default          => 'sort_order, id',
+            'events'          => 'event_date',
+            'sermons'         => 'published_at DESC, id',
+            'weekly_meetings' => 'sort_order, id',
+            'word_of_the_day' => 'id DESC',
+            default           => 'sort_order, id',
         };
 
         $realTable = $table;
