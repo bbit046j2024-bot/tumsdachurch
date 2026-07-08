@@ -1,5 +1,6 @@
 // Check if we're running in dev (Vite dev server) or production
-const isDev = window.location.hostname === 'localhost' && window.location.port === '5173';
+const isDev = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && 
+              (window.location.port === '5173' || window.location.port === '5174');
 const API_BASE = isDev ? '/api' : window.location.pathname.replace(/\/admin\/?$/, '/api');
 
 // Helper to get CSRF token
@@ -53,6 +54,7 @@ export const usersApi = {
   list: () => apiFetch('/users'),
   update: (id, data) => apiFetch(`/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deactivate: (id) => apiFetch(`/users/${id}`, { method: 'DELETE' }),
+  delete: (id) => apiFetch(`/users/${id}?permanent=true`, { method: 'DELETE' }),
 };
 
 // Payments

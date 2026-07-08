@@ -48,6 +48,34 @@ export default function Members() {
     }
   }
 
+  async function activate(member) {
+    if (window.confirm(`Are you sure you want to reactivate ${member.name}?`)) {
+      setError('')
+      setSuccess('')
+      try {
+        await usersApi.update(member.id, { is_active: 1 })
+        setSuccess(`Successfully reactivated user ${member.name}.`)
+        loadMembers()
+      } catch (err) {
+        setError(err.message || 'Failed to reactivate member.')
+      }
+    }
+  }
+
+  async function deleteMember(member) {
+    if (window.confirm(`Are you sure you want to PERMANENTLY delete user ${member.name}? This action cannot be undone and will unset their id from all audit logs and payment records.`)) {
+      setError('')
+      setSuccess('')
+      try {
+        await usersApi.delete(member.id)
+        setSuccess(`Successfully deleted user ${member.name}.`)
+        loadMembers()
+      } catch (err) {
+        setError(err.message || 'Failed to delete member.')
+      }
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -113,26 +141,41 @@ export default function Members() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      {m.is_active ? (
-                        <div className="flex gap-2">
+                      <div className="flex gap-2">
+                        {m.is_active ? (
+                          <>
+                            <button
+                              className="px-3 py-1.5 bg-slate-100 hover:bg-brand hover:text-white text-slate-700 text-xs font-bold rounded-lg transition-all duration-200"
+                              style={{ fontFamily: "'Inter', sans-serif" }}
+                              onClick={() => toggleRole(m)}
+                            >
+                              Toggle Role
+                            </button>
+                            <button
+                              className="px-3 py-1.5 bg-slate-100 hover:bg-amber-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition-all duration-200"
+                              style={{ fontFamily: "'Inter', sans-serif" }}
+                              onClick={() => deactivate(m)}
+                            >
+                              Deactivate
+                            </button>
+                          </>
+                        ) : (
                           <button
-                            className="px-3 py-1.5 bg-slate-100 hover:bg-brand hover:text-white text-slate-700 text-xs font-bold rounded-lg transition-all duration-200"
+                            className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-700 text-xs font-bold rounded-lg transition-all duration-200"
                             style={{ fontFamily: "'Inter', sans-serif" }}
-                            onClick={() => toggleRole(m)}
+                            onClick={() => activate(m)}
                           >
-                            Toggle Role
+                            Activate
                           </button>
-                          <button
-                            className="px-3 py-1.5 bg-slate-100 hover:bg-red-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition-all duration-200"
-                            style={{ fontFamily: "'Inter', sans-serif" }}
-                            onClick={() => deactivate(m)}
-                          >
-                            Deactivate
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-slate-400 text-xs font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>No actions available</span>
-                      )}
+                        )}
+                        <button
+                          className="px-3 py-1.5 bg-red-50 hover:bg-red-600 hover:text-white text-red-600 text-xs font-bold rounded-lg transition-all duration-200"
+                          style={{ fontFamily: "'Inter', sans-serif" }}
+                          onClick={() => deleteMember(m)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

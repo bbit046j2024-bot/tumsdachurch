@@ -45,6 +45,7 @@ function resolveRoute(string $method, array $segments): void {
             $method === 'GET'    && $idParam === null => $user->list(),
             $method === 'GET'    && $idParam !== null => $user->get($idParam),
             $method === 'PUT'    && $idParam !== null => $user->update($idParam, $actor),
+            $method === 'DELETE' && $idParam !== null && (isset($_GET['permanent']) || isset($_GET['hard'])) => $user->delete($idParam, $actor),
             $method === 'DELETE' && $idParam !== null => $user->deactivate($idParam, $actor),
             default => jsonError('User route not found.', 404),
         };

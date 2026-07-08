@@ -73,4 +73,27 @@ class UserController {
         auditLog($actor['id'], 'deactivate', 'users', $id);
         jsonResponse(['message' => "User #$id has been deactivated."]);
     }
+
+    // DELETE /api/users/{id}?permanent=true (Hard Delete)
+    public function delete(int $id, array $actor): void {
+        requireCsrf();
+        requireAdmin();
+
+        if ($id === (int) $actor['id']) {
+            jsonError('You cannot delete your own account.', 403);
+        }
+
+        // Check if user exists first to return proper 404
+        $check = getDB()->prepare('SELECT id FROM users WHERE id = ? LIMIT 1');
+        $check->execute([$id]);
+        if (!$check->fetch()) {
+            jsonError('User not found.', 404);
+        }
+
+        $stmt = getDB()->prepare('DELETE FROM users WHERE id = ?');
+        $stmt->execute([$id]);
+
+        auditLog($actor['id'], 'delete', 'users', $id);
+        jsonResponse(['message' => "User #$id has been permanently deleted."]);
+    }
 }
