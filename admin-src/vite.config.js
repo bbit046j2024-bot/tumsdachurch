@@ -3,11 +3,12 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig(({ command }) => {
   const isProd = command === 'build';
+  const isVercel = !!process.env.VERCEL;
   return {
     plugins: [react()],
-    base: isProd ? '/tumsda.org/admin/' : '/',
+    base: isVercel ? '/' : (isProd ? '/tumsda.org/admin/' : '/'),
     build: {
-      outDir: '../admin',
+      outDir: isVercel ? 'dist' : '../admin',
       emptyOutDir: true,
     },
     server: {
