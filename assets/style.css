@@ -5610,8 +5610,8 @@ body.side-panel-open {
    MISSION ACCORDION — Bootstrap Override Fixes
    ═══════════════════════════════════════════════════════════════ */
 
-/* Strip Bootstrap's default accordion styles from our custom accordion */
-.mission-accordion .accordion-collapse {
+/* Strip default styles from our custom accordion collapse wrapper */
+.mission-accordion-collapse {
 	background: transparent !important;
 	border: none !important;
 }

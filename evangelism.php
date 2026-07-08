@@ -102,14 +102,12 @@ include 'header.php';
 					<?php foreach ($missions as $index => $mission): ?>
 					<div class="mission-accordion-item <?php echo $index === 0 ? 'active' : ''; ?>">
 
-						<!-- Accordion Header / Toggle -->
+						<!-- Custom Accordion Header / Toggle Button -->
 						<button
 							class="mission-accordion-header"
 							type="button"
-							data-bs-toggle="collapse"
-							data-bs-target="#collapseMission<?php echo $index; ?>"
+							data-toggle-index="<?php echo $index; ?>"
 							aria-expanded="<?php echo $index === 0 ? 'true' : 'false'; ?>"
-							aria-controls="collapseMission<?php echo $index; ?>"
 						>
 							<span class="mission-accordion-left">
 								<?php if ($mission['is_upcoming']): ?>
@@ -128,8 +126,12 @@ include 'header.php';
 							<span class="mission-accordion-chevron"><i class="fas fa-chevron-down"></i></span>
 						</button>
 
-						<!-- Accordion Body -->
-						<div id="collapseMission<?php echo $index; ?>" class="accordion-collapse collapse <?php echo $index === 0 ? 'show' : ''; ?>" data-bs-parent="#missionAccordion">
+						<!-- Custom Accordion Content Wrapper -->
+						<div 
+							class="mission-accordion-collapse" 
+							id="mission-collapse-<?php echo $index; ?>"
+							style="display: <?php echo $index === 0 ? 'block' : 'none'; ?>;"
+						>
 							<div class="mission-accordion-body">
 
 								<!-- Theme Banner -->
@@ -197,5 +199,44 @@ include 'header.php';
 		</div>
 	</div>
 </section>
+
+<!-- Custom Vanilla Accordion Logic -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	const headers = document.querySelectorAll('.mission-accordion-header');
+	
+	headers.forEach(header => {
+		header.addEventListener('click', function() {
+			const index = this.getAttribute('data-toggle-index');
+			const content = document.getElementById('mission-collapse-' + index);
+			const parentItem = this.closest('.mission-accordion-item');
+			const isExpanded = this.getAttribute('aria-expanded') === 'true';
+			
+			// If already expanded, close it
+			if (isExpanded) {
+				this.setAttribute('aria-expanded', 'false');
+				content.style.display = 'none';
+				parentItem.classList.remove('active');
+			} else {
+				// Close all other accordion items
+				document.querySelectorAll('.mission-accordion-header').forEach(h => {
+					h.setAttribute('aria-expanded', 'false');
+					const idx = h.getAttribute('data-toggle-index');
+					const c = document.getElementById('mission-collapse-' + idx);
+					if (c) c.style.display = 'none';
+					
+					const pi = h.closest('.mission-accordion-item');
+					if (pi) pi.classList.remove('active');
+				});
+				
+				// Open current one
+				this.setAttribute('aria-expanded', 'true');
+				content.style.display = 'block';
+				parentItem.classList.add('active');
+			}
+		});
+	});
+});
+</script>
 
 <?php include 'footer.php'; ?>

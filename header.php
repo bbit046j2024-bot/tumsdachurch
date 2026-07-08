@@ -16,7 +16,7 @@ if (!isset($currentPage)) {
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9[...]" crossorigin="anonymous" referrerpolicy="no-referrer" />
 	<link rel="stylesheet" href="assets/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/all.min.css">
-	<link rel="stylesheet" href="assets/style.css">
+	<link rel="stylesheet" href="assets/style.css?v=1.1">
 	<link rel="stylesheet" href="assets/style-utils.css">
 	<link rel="icon" type="image/png" href="assets/img/favicon.png">
 	<script src="assets/main.js" defer></script>
